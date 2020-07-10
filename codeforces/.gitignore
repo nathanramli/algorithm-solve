@@ -1,2 +1,3 @@
 # remove *.exe for testing
-*.exe
+/*
+!*.cpp
