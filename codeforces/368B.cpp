@@ -3,29 +3,24 @@
 using namespace std;
 
 int main(){
-    int n, m, distinct = 0, tertinggi = 0, max_a_index = 0, max_e_index = 0, curr_a_index = 0, curr_e_index = 0, x;
+    int n, m, x, distinct = 0;
     cin >> n >> m;
-    vector<int> a(n);
-    vector<int> b(100000);
-    vector<int> jawaban(n+1);
-    jawaban[0] = 0;
 
-    for(int i = 0; i < n; i++){
-        cin >> a[i];
+    vector<int> a(100000);
+    vector<int> arr(n);
+    vector<int> ans(n);
+    for (int i = 0; i < n; i++)
+        cin >> arr[i];
+
+    for (int i = n - 1; i >= 0; i--){
+        if(a[arr[i] - 1] != 1) ans[i] = ++distinct;
+        else ans[i] = distinct;
+        a[arr[i] - 1] = 1;
     }
 
-    for(int i = n-1; i >= 0; i--){
-
-        if(b[a[i] - 1] != 1){
-            distinct++;
-            b[a[i] - 1] = 1;
-        }
-        tertinggi = max(distinct, tertinggi);
-        jawaban[i + 1] = tertinggi;
-    }
-
-    for(int i = 0; i < m; i++){
+    while (m--)
+    {
         cin >> x;
-        cout << jawaban[x] << "\n";
-    }
+        cout << ans[x - 1] << "\n";
+    }    
 }
