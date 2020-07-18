@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "algorithm": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "numeric": "cpp",
+        "cmath": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp"
     }
 }
