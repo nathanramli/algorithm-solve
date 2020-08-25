@@ -1,31 +1,21 @@
 #include <bits/stdc++.h>
 typedef long long ll;
 using namespace std;
-
+ll a, b;
+stack<ll> rute;
 bool found = false;
 
-struct Node {
-    ll val;
-    Node * left;
-    Node * right;
-    Node * root;
-    bool visited;
-    stack<ll> rute;
-};
+map<ll, char> nodes; 
 
-void dfs(struct Node * tree){
-    if(!found){
-        if(!tree->visited){
-        }
+void dfs(ll k){
+    if(!rute.empty() && found == false){
+        nodes.insert({k * 2, 0});
+        nodes.insert({k * 10 + 1, 0});
     }
 }
 
 int main(){
-    ll a, b;
     cin >> a >> b;
-    
-    struct Node * tree = new Node;
-    tree->val = a;
-    dfs(tree);
-
+    rute.push(a);
+    dfs(a);
 }
