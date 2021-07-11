@@ -1,9 +1,37 @@
-#include <algorithm>
-#include <iostream>
-#include <utility>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
+
+void count_sort(vector<int> &p, vector<int> &c){
+    int n = p.size();
+    vector<int> cnt(n); // count every bucket size classified by the class
+    vector<int> new_p(n);
+    for(int i = 0; i < c.size(); i++){
+        cnt[c[i]]++;
+    }
+
+    // store the new position
+    vector<int> new_pos(n);
+    new_pos[0] = 0;
+    for(int i = 1; i < n; i++){
+        // ilustrate
+        // 0 = 0     = 0    ...
+        // 1 = 0 + 1 = 1    => begin from index 1
+        // 2 = 1 + 1 = 2    => begin from index 2
+        // 3 = 2 + 2 = 4    => begin from index 4
+        // 4 = 4 + 2 = 6    ...
+        // 5 = 6 + 1 = 7    ...
+        // 6 = 7 + 0 = 7    ...
+        new_pos[i] = new_pos[i - 1] + cnt[i - 1];
+    }
+    
+    for(int i = 0; i < n; i++){
+        int begin_pos = new_pos[c[p[i]]];
+        new_p[begin_pos] = p[i]; 
+        new_pos[c[p[i]]]++; // increment start pos of the current bucket
+    }
+    p = new_p;
+}
 
 // before optimization
 void radix_sort(vector<pair<pair<int, int>, int> > &fc, int n){
@@ -36,7 +64,7 @@ int main(){
     cin >> s;
     s += '$';
     int n = s.size();
-    vector<int> p(n), c(n);
+    vector<int> p(n), c(n), new_c(n);
     {
         vector<pair<char, int> > fc(n); // first character
         for(int i = 0; i < n; i++)
@@ -59,32 +87,30 @@ int main(){
 
     int k = 0;
     while((1 << k) < n){
-        vector<pair<pair<int, int>, int> > fc(n);
+        // shift the indices by 2^k
         for(int i = 0; i < n; i++){
-            // assign a class for each sub
-            // c[i] is a class of string on the left halves
-            // c[i + (1 << k)] is a class of string on the right halves
-            fc[i] = make_pair(make_pair(c[i], c[(i + (1 << k)) % n]), i);
+            // + n so the modulo doesn't return wrong number because of (minus % mod)
+            p[i] = (p[i] - (1 << k) + n) % n;
         }
-        // sort the pair
-        radix_sort(fc, n);
 
-        // store the original index of the pair
-        for(int i = 0; i < n; i++){
-            p[i] = fc[i].second;
-        }
+        // because the right halves is from the sorted class from the last one
+        // we just need to sort the left halves
+        count_sort(p, c);
 
         // assign a class
-        c[p[0]] = 0;
+        pair<int, int> prev = {c[p[0]], c[(p[0] + (1 << k)) % n]};
+        new_c[p[0]] = 0;
         // assign a class for each pair
         for(int i = 1; i < n; i++){
-            if(fc[i].first == fc[i - 1].first){ // assign a same class because they're the same
-                c[p[i]] = c[p[i - 1]];
+            pair<int, int> now = {c[p[i]], c[(p[i] + (1 << k)) % n]};
+            if(now == prev){ // assign a same class because they're the same
+                new_c[p[i]] = new_c[p[i - 1]];
             }else{ // if not assign different class
-                c[p[i]] = c[p[i - 1]] + 1;                
+                new_c[p[i]] = new_c[p[i - 1]] + 1;                
             }
+            prev = now;
         }
-
+        c = new_c;
         k++;
     }
 
